@@ -5,20 +5,27 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import java.util.Random;
+
+
 public class PubSub {
 
+	public static int msgNumber=0;
+    
 public static void main(String[] args) 
 {
 	int noOfTopics=5, noOfSub=5, noOfPub=5;
     float subPercent = 0.5f;
 	int qos             = 2;
-    String broker       = "tcp://iot.eclipse.org:1883";
+    String iotBroker = "tcp://iot.eclipse.org:1883";
+    String localBroker = "tcp://localhost:1883";
+	String broker       = localBroker;
     MqttClient[] Subscribers = new MqttClient[noOfSub];
     MqttClient[] Publishers = new MqttClient[noOfPub];
     
     try {
         System.out.println("Connecting to broker: "+broker);
         Random rand = new Random();
+        
     	for(int i=0;i<noOfPub;i++) {
     		Publishers[i]= CreateClient(ClientType.Publisher,i+1,broker);
     	}
@@ -27,20 +34,21 @@ public static void main(String[] args)
     		Subscribers[i]= CreateClient(ClientType.Subscriber,i+1,broker);
     		for(int j=0;j<noOfTopics;j++) {
     			if(rand.nextFloat()<=subPercent) {
-    				Subscribers[i].subscribe("Topic-"+(j+1));
+    				Subscribers[i].subscribe("Topic\\"+(j+1));
     			}
     		}
     	}
-    	
+    	System.out.println("Connected");
         
-        System.out.println("Connected");
-        String content = "From1";
-        System.out.println("Publishing message: "+content);
-        MqttMessage message = new MqttMessage(content.getBytes());
-        message.setQos(qos);
-        Publishers[0].publish("Topic-1", message);
-        
-        System.out.println("Message published");
+    	for(int i=0;i<noOfPub;i++) {
+    		PublishingThread Pt = new PublishingThread(Publishers[i],i+1);
+    	}
+    	try {
+    	Thread.sleep(12000);
+    	}catch(Exception e) {
+    		e.printStackTrace();
+    	}
+    	System.out.println("Message published");
         for(int i=0;i<noOfPub;i++)	Publishers[i].disconnect();
     	for(int i=0;i<noOfSub;i++) Subscribers[i].disconnect();
     	
@@ -69,9 +77,12 @@ public static MqttClient CreateClient(ClientType ct, int id, String broker) thro
 		
 	}else {
 		client = new MqttClient(broker,"Sub"+id,new MemoryPersistence());
-		client.setCallback(new SimpleMqttCallback());
+		client.setCallback(new SimpleMqttCallback(client.getClientId()));
 	}
 	client.connect(connOpts);
     return client;
-	}
 }
+
+
+}
+
