@@ -24,7 +24,7 @@ public static void main(String[] args)
         System.out.println("Connecting to broker: "+broker);
         sampleClient.connect(connOpts);
         
-        sampleClient.setCallback(new SimpleMqqtCallback());
+        sampleClient.setCallback(new SimpleMqttCallback());
         sampleClient.subscribe(topic);
         
         System.out.println("Connected");
