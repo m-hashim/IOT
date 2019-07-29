@@ -13,8 +13,8 @@ public class PubSub {
     
 public static void main(String[] args) 
 {
-	int noOfTopics=5, noOfSub=5, noOfPub=5;
-    float subPercent = 0.5f;
+	int noOfTopics=1, noOfSub=1, noOfPub=1;
+    float subPercent = 1f;
 	int qos             = 2;
     String iotBroker = "tcp://iot.eclipse.org:1883";
     String localBroker = "tcp://localhost:1883";

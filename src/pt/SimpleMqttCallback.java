@@ -25,6 +25,10 @@ public class SimpleMqttCallback implements MqttCallback {
 	public void messageArrived(String arg0, MqttMessage arg1) throws Exception {
 		String msg = new String(arg1.getPayload());
 		System.out.println("Message received by "+id+":\n\t"+msg+"\tDecrypted message: "+CaesarCipher.decrypt(msg,2));
+		//System.out.println("Message received by "+id+":\n\t"+msg+"\tDecrypted message: "+AffineCipher.decryptionMessage(msg));
+		//System.out.println("Message received by "+id+":\n\t"+msg+"\tDecrypted message: "+VigenereCipher.originalText(msg, VigenereCipher.generateKey(msg, "Hashim")));
+		//System.out.println("Message received by "+id+":\n\t"+msg+"\tDecrypted message: "+RailFenceCipher.Decryption(msg, 5));
+		
 		
 	
 	}
