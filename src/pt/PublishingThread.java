@@ -18,14 +18,11 @@ public class PublishingThread extends Thread {
 		
 		try {
 			for(int i=0;i<duration/(id*3);i++) {
-				PubSub.msgNumber++;
-				String content = "Message from "+client.getClientId()+" with MsgNo: " +PubSub.msgNumber;
+				IotNetwork.msgNumber++;
+				String content = "Message from "+client.getClientId()+" with MsgNo: " +IotNetwork.msgNumber;
 				System.out.println(content);
-				MqttMessage message = new MqttMessage(CaesarCipher.encrypt(content,2).toString().getBytes());
-				//MqttMessage message = new MqttMessage(AffineCipher.encryptionMessage(content).toString().getBytes());
-				//MqttMessage message = new MqttMessage(VigenereCipher.cipherText(content, VigenereCipher.generateKey(content, "Hashim")).toString().getBytes());
-				//MqttMessage message = new MqttMessage(RailFenceCipher.Encryption(content, 5).toString().getBytes());
-		        
+				MqttMessage message = new MqttMessage(CipherManager.Instance.Encryption(content).getBytes());
+				
 				message.setQos(qos);
 		        client.publish("Topic"+"\\"+(id), message);
 		        

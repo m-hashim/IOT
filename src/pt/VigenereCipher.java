@@ -1,82 +1,53 @@
 package pt;
 
-//Java code to implement Vigenere Cipher 
-
 class VigenereCipher 
 {
 	static int alphabet = 128;
 	static int ap = 32;
-//This function generates the key in 
-//a cyclic manner until it's length isi'nt 
-//equal to the length of original text 
-static String generateKey(String str, String key) 
-{ 
-	int x = str.length(); 
 
-	for (int i = 0; ; i++) 
+	static String generateKey(String str, String key) 
 	{ 
-		if (x == i) 
-			i = 0; 
-		if (key.length() == str.length()) 
-			break; 
-		key+=(key.charAt(i)); 
+		int x = str.length(); 
+		for (int i = 0; ; i++) 
+		{ 
+			if (x == i) 
+				i = 0; 
+			if (key.length() == str.length()) 
+				break; 
+			key+=(key.charAt(i)); 
+		} 
+		return key; 
 	} 
-	return key; 
-} 
 
-//This function returns the encrypted text 
-//generated with the help of the key 
-static String cipherText(String str, String key) 
-{ 
-	String cipher_text=""; 
-
-	for (int i = 0; i < str.length(); i++) 
+	static String cipherText(String str, String key) 
 	{ 
-		// converting in range 0-(alphabet-1) 
-		int x = (str.charAt(i) + key.charAt(i)) %alphabet; 
-
-		// convert into alphabets(ASCII) 
-//		x += ap; 
-
-		cipher_text+=(char)(x); 
+		String cipher_text=""; 	
+		try {
+			for (int i = 0; i < str.length(); i++) 
+			{ 
+				int x = (str.charAt(i) + key.charAt(i)) %alphabet; 
+				cipher_text+=(char)(x); 
+			} 
+		}catch(Exception e) {
+			System.out.println("Error in Encrytion");
+			e.printStackTrace();
+		}
+		return cipher_text; 
 	} 
-	return cipher_text; 
-} 
 
-//This function decrypts the encrypted text 
-//and returns the original text 
-static String originalText(String cipher_text, String key) 
-{ 
-	String orig_text=""; 
-
-	for (int i = 0 ; i < cipher_text.length() && 
-							i < key.length(); i++) 
+	static String originalText(String cipher_text, String key) 
 	{ 
-		// converting in range 0-95 
-		int x = (cipher_text.charAt(i)   - key.charAt(i)  + alphabet) %alphabet; 
-
-		// convert into alphabets(ASCII) 
-		//x += ap; 
-		orig_text+=(char)(x); 
+		String orig_text=""; 
+		try {
+			for (int i = 0 ; i < cipher_text.length() && i < key.length(); i++) 
+			{ 
+				int x = (cipher_text.charAt(i)   - key.charAt(i)  + alphabet) %alphabet; 
+				orig_text+=(char)(x); 
+			} 
+		}catch(Exception e) {
+			System.out.println("Error in Decryption");
+			e.printStackTrace();
+		}
+		return orig_text; 
 	} 
-	return orig_text; 
-} 
-
-//Driver code 
-public static void main(String[] args) 
-{ 
-	String str = "GEEKSFORGEEKS"; 
-	String keyword = "AYUSH"; 
-
-	String key = generateKey(str, keyword); 
-	String cipher_text = cipherText(str, key); 
-
-	System.out.println("Ciphertext : "
-		+ cipher_text + "\n"); 
-
-	System.out.println("Original/Decrypted Text : "
-		+ originalText(cipher_text, key)); 
-	} 
-} 
-
-//This code has been contributed by 29AjayKumar 
+}
