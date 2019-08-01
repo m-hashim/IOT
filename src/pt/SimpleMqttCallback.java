@@ -22,7 +22,10 @@ public class SimpleMqttCallback implements MqttCallback {
 	@Override
 	public void messageArrived(String arg0, MqttMessage arg1) throws Exception {
 		String msg = new String(arg1.getPayload());
-		System.out.println("Message received by "+id+":\n\t"+msg+"\tDecrypted message: "+CipherManager.Instance.Decryption(msg));
+		System.out.println("Message received by "+id);
+		
+		//Message Decryption
+		CipherManager.Instance.Decryption(msg);
 	}
 
 }

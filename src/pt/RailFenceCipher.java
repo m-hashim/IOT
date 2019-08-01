@@ -32,7 +32,7 @@ class RailFenceCipher{
 			e.printStackTrace();
 		}
 		return cipherText;
-	 }
+	}
 	  
 	  
 	static String Decryption(String cipherText,int depth)

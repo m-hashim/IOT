@@ -8,13 +8,18 @@ import java.util.Random;
 
 public class IotNetwork {
 
-	public static int msgNumber=0;
-    
+	public static int MessageLength = 10000;
+	public static int SimulationDuration = 30;
+	
 	public static void main(String[] args) 
 	{
-		int noOfTopics=5, noOfSub=5, noOfPub=5;
-	    float connectionPercent = 0.5f;
+		int noOfTopics=10, noOfSub=1, noOfPub=10;
+	    float connectionPercent = 100f;
 		
+	    connectionPercent/=100f;
+
+	    CipherManager.Instance = new CipherManager(CipherType.RailFence);
+	    
 	    String iotBroker = "tcp://iot.eclipse.org:1883";
 	    String localBroker = "tcp://localhost:1883";
 		String broker       = localBroker;
@@ -22,7 +27,6 @@ public class IotNetwork {
 	    MqttClient[] Subscribers = new MqttClient[noOfSub];
 	    MqttClient[] Publishers = new MqttClient[noOfPub];
 	    
-	    CipherManager.Instance = new CipherManager(CipherType.Caesar);
 	    
 	    try {
 	        System.out.println("Connecting to broker: "+broker);
@@ -63,7 +67,15 @@ public class IotNetwork {
 	    	for(int i=0;i<noOfSub;i++) Subscribers[i].disconnect();
 	    	
 	    	System.out.println("Disconnected");
-	        System.exit(0);
+
+	    	System.out.println("Total Encryption Time:"+CipherManager.Instance.totalEncryptionTime);
+	    	System.out.println("Total Decryption Time:"+CipherManager.Instance.totalDecryptionTime);
+	    	
+	    	//Not giving required values
+	    	System.out.println("Total Encryption Memory:"+CipherManager.Instance.totalEncryptionMemory);
+	    	System.out.println("Total Decryption Memory:"+CipherManager.Instance.totalDecryptionMemory);
+	    	
+	    	System.exit(0);
 	        
 	    } catch(MqttException me) {
 	        System.out.println("reason "+me.getReasonCode());
@@ -79,11 +91,8 @@ public class IotNetwork {
 		MqttClient client;
 		MqttConnectOptions connOpts = new MqttConnectOptions();
 	    connOpts.setCleanSession(true);
-	    
 		if(ct == ClientType.Publisher) {
-			
 			client = new MqttClient(broker,"Pub"+id,new MemoryPersistence());
-			
 		}else {
 			client = new MqttClient(broker,"Sub"+id,new MemoryPersistence());
 			client.setCallback(new SimpleMqttCallback(client.getClientId()));
