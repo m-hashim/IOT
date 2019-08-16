@@ -13,38 +13,46 @@ public class IotNetwork {
 	
 	public static void main(String[] args) 
 	{
-		int noOfTopics=10, noOfSub=1, noOfPub=10;
-	    float connectionPercent = 100f;
 		
+		
+		
+		int noOfSub=1, noOfPub=10;
+	    float connectionPercent = 30f;
+		
+	    
+	    
+	    
+	    
 	    connectionPercent/=100f;
 
+	    Broker.Instance = new Broker();
 	    CipherManager.Instance = new CipherManager(CipherType.RailFence);
 	    
-	    String iotBroker = "tcp://iot.eclipse.org:1883";
-	    String localBroker = "tcp://localhost:1883";
-		String broker       = localBroker;
-		
+	    
 	    MqttClient[] Subscribers = new MqttClient[noOfSub];
 	    MqttClient[] Publishers = new MqttClient[noOfPub];
 	    
 	    
 	    try {
-	        System.out.println("Connecting to broker: "+broker);
+	        System.out.println("Connecting to broker");
 	        
 	    	for(int i=0;i<noOfPub;i++) {
-	    		Publishers[i]= CreateClient(ClientType.Publisher,i+1,broker);
+	    		Publishers[i]= CreateClient(ClientType.Publisher,i+1);
 	    	}
 	        
 	    	Random rand = new Random();        
 	    	
 	    	for(int i=0;i<noOfSub;i++) {
-	    		Subscribers[i]= CreateClient(ClientType.Subscriber,i+1,broker);
-	    		for(int j=0;j<noOfTopics;j++) {
+	    		Subscribers[i]= CreateClient(ClientType.Subscriber,i+1);
+	    	
+	    		for(String topic : Broker.Instance.Topics) {
 	    			if(rand.nextFloat()<=connectionPercent) {
-	    				Subscribers[i].subscribe("Topic\\"+(j+1));
+	    				//Subscribers[i].subscribe(topic);
+	    				Broker.Instance.RegisterSubscriber(Subscribers[i], topic);
 	    			}
 	    		}
 	    	}
+	    	
 	    	
 	    	System.out.println("Connected");
 	        
@@ -64,7 +72,7 @@ public class IotNetwork {
 			}
 	    	
 	    	for(int i=0;i<noOfPub;i++)	Publishers[i].disconnect();
-	    	for(int i=0;i<noOfSub;i++) Subscribers[i].disconnect();
+	    	for(int i=0;i<noOfSub;i++) 	Subscribers[i].disconnect();
 	    	
 	    	System.out.println("Disconnected");
 
@@ -87,7 +95,8 @@ public class IotNetwork {
 	    }
 	}
 
-	public static MqttClient CreateClient(ClientType ct, int id, String broker) throws MqttException {
+	public static MqttClient CreateClient(ClientType ct, int id) throws MqttException {
+		String broker = Broker.Instance.broker;
 		MqttClient client;
 		MqttConnectOptions connOpts = new MqttConnectOptions();
 	    connOpts.setCleanSession(true);

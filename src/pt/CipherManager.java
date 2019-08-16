@@ -13,8 +13,7 @@ public class CipherManager {
 		totalDecryptionTime = 0;
 		totalEncryptionMemory = 0;
 		totalDecryptionMemory = 0;
-		rt = Runtime.getRuntime();
-		
+		rt = Runtime.getRuntime();	
 	}
 	
 	public String Encryption(String text) {

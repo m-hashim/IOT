@@ -10,6 +10,7 @@ public class SimpleMqttCallback implements MqttCallback {
 	public SimpleMqttCallback(String id) {
 		this.id = id;
 	}
+	
 	@Override
 	public void connectionLost(Throwable arg0) {
 		System.out.println("Connection lost to broker");
@@ -17,6 +18,7 @@ public class SimpleMqttCallback implements MqttCallback {
 
 	@Override
 	public void deliveryComplete(IMqttDeliveryToken arg0) {
+	
 	}
 
 	@Override

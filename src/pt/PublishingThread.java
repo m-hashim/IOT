@@ -1,4 +1,5 @@
 package pt;
+import java.util.ArrayList;
 import java.util.Random;
 
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -22,11 +23,22 @@ public class PublishingThread extends Thread {
 		try {
 			for(int i=0;i<duration;i++) {
 				String content = usedContent;
-				MqttMessage message = new MqttMessage(CipherManager.Instance.Encryption(content).getBytes());
 				
+				MqttMessage message = new MqttMessage(CipherManager.Instance.Encryption(content).getBytes());
+				String Topic = Broker.Instance.GetRandomTopic();
+				
+				ArrayList<ClientInfo> subscribers = Broker.Instance.SubscribersByTopic(Topic);
+				
+				for(ClientInfo cl : subscribers) {
+					
+				}
+				
+				/*
 				message.setQos(qos);
 		        client.publish("Topic"+"\\"+(id), message);
-		        
+		        */
+				
+				
 				Thread.sleep(1000);
 			}		
 		} catch (Exception e) {
