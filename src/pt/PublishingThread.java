@@ -8,12 +8,11 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 public class PublishingThread extends Thread {
 	int duration = IotNetwork.SimulationDuration;
 	int qos = 2;
-	MqttClient client ;
+	IotClient client ;
 	int id;
-	public PublishingThread(MqttClient client,int id) {
+	public PublishingThread(IotClient client,int id) {
 		this.client = client;
 		this.id = id;
-		usedContent = CreateContent();
 		start();
 	}
 	
@@ -22,21 +21,16 @@ public class PublishingThread extends Thread {
 		
 		try {
 			for(int i=0;i<duration;i++) {
-				String content = usedContent;
 				
-				MqttMessage message = new MqttMessage(CipherManager.Instance.Encryption(content).getBytes());
 				String Topic = Broker.Instance.GetRandomTopic();
 				
 				ArrayList<ClientInfo> subscribers = Broker.Instance.SubscribersByTopic(Topic);
-				
+			
+				PersonalConnection pc;
 				for(ClientInfo cl : subscribers) {
-					
+					pc = new PersonalConnection(client,cl.client);
 				}
 				
-				/*
-				message.setQos(qos);
-		        client.publish("Topic"+"\\"+(id), message);
-		        */
 				
 				
 				Thread.sleep(1000);
@@ -47,19 +41,6 @@ public class PublishingThread extends Thread {
 		
 	}
 	
-	String usedContent;
-	String sample = "The quick brown fox jumps over the lazy dog The quick brown fox jumps over the lazy dog The quick brown fox jumps over the lazy dog The quick brown fox jumps over the lazy dog The quick brown fox jumps over the lazy dog";
-
-	public String CreateContent() {
-		
-		String result = new String();
-		StringBuffer sb = new StringBuffer();
-		for(int i=0;i<=IotNetwork.MessageLength/sample.length();i++) {
-			sb.append(sample);
-		}
-		result =sb.toString();
-		return result;
-	}
 	
 	 
 }

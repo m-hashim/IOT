@@ -1,82 +1,65 @@
 package pt;
 
 public class CipherManager {
-	public static CipherManager Instance;
-	public long totalEncryptionTime,totalDecryptionTime;
-	public long totalEncryptionMemory,totalDecryptionMemory;
-	Runtime rt;
 	private CipherType cipherType ;
+	private int key1 = 5 , key2 = 7;
 	public CipherManager() {}
 	public CipherManager(CipherType ct) {
 		cipherType = ct;
-		totalEncryptionTime = 0;
-		totalDecryptionTime = 0;
-		totalEncryptionMemory = 0;
-		totalDecryptionMemory = 0;
-		rt = Runtime.getRuntime();	
+		
 	}
 	
 	public String Encryption(String text) {
-		long startTime = System.nanoTime();
-		long startMemory = (rt.totalMemory() - rt.freeMemory()) / 1024 / 1024;
 		String result = new String();
 		switch (cipherType){
 			case Affine:
 			{
-				result = AffineCipher.encryptionMessage(text);
+				result = AffineCipher.encryptionMessage(text,key1,key2);
 			}
 			case Caesar:
 			{
-				result = CaesarCipher.encrypt(text,2);
+				result = CaesarCipher.encrypt(text,key1);
 			}
 			case RailFence:
 			{
-				result = RailFenceCipher.Encryption(text, 5);
-			}
-			case Vigenere:
-			{
-				result = VigenereCipher.cipherText(text, VigenereCipher.generateKey(text, "Hashim"));
+				result = RailFenceCipher.Encryption(text, key1);
 			}
 			default:
 			{
 				result = text;
 			}
-			
 		}
-		totalEncryptionMemory += ((rt.totalMemory() - rt.freeMemory()) / 1024 / 1024)-startMemory;
-		totalEncryptionTime += (System.nanoTime()-startTime)/1000000;
 		return result;
 	}
-	public String Decryption(String text)	{
-		long startTime = System.nanoTime();
-		long startMemory = (rt.totalMemory() - rt.freeMemory()) / 1024 / 1024;
-		
+	
+	public String Decryption(String text)	{	
 		String result = new String();
 		switch (cipherType){
 			case Affine:
 			{
-				result = AffineCipher.decryptionMessage(text);
+				result = AffineCipher.decryptionMessage(text,key1,key2);
 			}
 			case Caesar:
 			{
-				result = CaesarCipher.decrypt(text,2);
+				result = CaesarCipher.decrypt(text,key1);
 			}
 			case RailFence:
 			{
-				result = RailFenceCipher.Decryption(text, 5);
-			}
-			case Vigenere:
-			{
-				result = VigenereCipher.originalText(text, VigenereCipher.generateKey(text, "Hashim"));
+				result = RailFenceCipher.Decryption(text, key1);
 			}
 			default:
 			{
 				result = text;
 			}
-		}
-		totalDecryptionMemory += ((rt.totalMemory() - rt.freeMemory()) / 1024 / 1024)-startMemory;
-		totalDecryptionTime += (System.nanoTime()-startTime)/1000000;
-		
+		}	
 		return result;
+	}
+	
+	public void SetKey1(int key) {
+		key1 = key;
+	}
+	
+	public void SetKey2(int key) {
+		key2 = key;
 	}
 }

@@ -5,10 +5,10 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import java.util.*;
 class ClientInfo {
-	MqttClient client;
+	IotClient client;
 	String topic;
 	public ClientInfo() {}
-	public ClientInfo(MqttClient client,String topic) {
+	public ClientInfo(IotClient client,String topic) {
 		this.client = client;
 		this.topic = topic;
 	}
@@ -37,7 +37,7 @@ public class Broker {
 		} 
 	}
 	
-	public void RegisterSubscriber(MqttClient client, String topic) {
+	public void RegisterSubscriber(IotClient client, String topic) {
 		try {
 			Subscribers.add(new ClientInfo(client,topic));
 			client.subscribe(topic);

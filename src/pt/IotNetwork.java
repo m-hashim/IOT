@@ -22,15 +22,14 @@ public class IotNetwork {
 	    
 	    
 	    
-	    
+	
 	    connectionPercent/=100f;
 
 	    Broker.Instance = new Broker();
-	    CipherManager.Instance = new CipherManager(CipherType.RailFence);
 	    
 	    
-	    MqttClient[] Subscribers = new MqttClient[noOfSub];
-	    MqttClient[] Publishers = new MqttClient[noOfPub];
+	    IotClient[] Subscribers = new IotClient[noOfSub];
+	    IotClient[] Publishers = new IotClient[noOfPub];
 	    
 	    
 	    try {
@@ -75,13 +74,6 @@ public class IotNetwork {
 	    	for(int i=0;i<noOfSub;i++) 	Subscribers[i].disconnect();
 	    	
 	    	System.out.println("Disconnected");
-
-	    	System.out.println("Total Encryption Time:"+CipherManager.Instance.totalEncryptionTime);
-	    	System.out.println("Total Decryption Time:"+CipherManager.Instance.totalDecryptionTime);
-	    	
-	    	//Not giving required values
-	    	System.out.println("Total Encryption Memory:"+CipherManager.Instance.totalEncryptionMemory);
-	    	System.out.println("Total Decryption Memory:"+CipherManager.Instance.totalDecryptionMemory);
 	    	
 	    	System.exit(0);
 	        
@@ -95,15 +87,18 @@ public class IotNetwork {
 	    }
 	}
 
-	public static MqttClient CreateClient(ClientType ct, int id) throws MqttException {
+	public static IotClient CreateClient(ClientType ct, int id) throws MqttException {
 		String broker = Broker.Instance.broker;
-		MqttClient client;
+		IotClient client;
 		MqttConnectOptions connOpts = new MqttConnectOptions();
 	    connOpts.setCleanSession(true);
 		if(ct == ClientType.Publisher) {
-			client = new MqttClient(broker,"Pub"+id,new MemoryPersistence());
+					
+			client = new IotClient(broker,"Pub"+id,ct);
+			//new MqttClient(broker,"Pub"+id,new MemoryPersistence());
 		}else {
-			client = new MqttClient(broker,"Sub"+id,new MemoryPersistence());
+			client = new IotClient(broker,"Sub"+id,ct);
+			//new MqttClient(broker,"Sub"+id,new MemoryPersistence());
 			client.setCallback(new SimpleMqttCallback(client.getClientId()));
 		}
 		client.connect(connOpts);
