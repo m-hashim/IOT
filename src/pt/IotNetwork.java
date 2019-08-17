@@ -8,50 +8,55 @@ import java.util.Random;
 
 public class IotNetwork {
 
-	public static int MessageLength = 10000;
-	public static int SimulationDuration = 30;
+	public static int MessageLength = 100;
+	public static int SimulationDuration = 10;
 	
 	public static void main(String[] args) 
 	{
-		int noOfTopics=10, noOfSub=1, noOfPub=10;
-	    float connectionPercent = 100f;
 		
+		int noOfSub=4, noOfPub=4;
+	    float connectionPercent = 100f;
+	
 	    connectionPercent/=100f;
 
-	    CipherManager.Instance = new CipherManager(CipherType.RailFence);
+	    Broker.Instance = new Broker();
 	    
-	    String iotBroker = "tcp://iot.eclipse.org:1883";
-	    String localBroker = "tcp://localhost:1883";
-		String broker       = localBroker;
-		
-	    MqttClient[] Subscribers = new MqttClient[noOfSub];
-	    MqttClient[] Publishers = new MqttClient[noOfPub];
+	    
+	    IotClient[] Subscribers = new IotClient[noOfSub];
+	    IotClient[] Publishers = new IotClient[noOfPub];
 	    
 	    
 	    try {
-	        System.out.println("Connecting to broker: "+broker);
+	        System.out.println("Connecting to broker");
 	        
 	    	for(int i=0;i<noOfPub;i++) {
-	    		Publishers[i]= CreateClient(ClientType.Publisher,i+1,broker);
+	    		Publishers[i]= CreateClient(ClientType.Publisher,i+1);
 	    	}
 	        
 	    	Random rand = new Random();        
 	    	
 	    	for(int i=0;i<noOfSub;i++) {
-	    		Subscribers[i]= CreateClient(ClientType.Subscriber,i+1,broker);
-	    		for(int j=0;j<noOfTopics;j++) {
+	    		Subscribers[i]= CreateClient(ClientType.Subscriber,i+1);
+	    	
+	    		for(String topic : Broker.Instance.Topics) {
 	    			if(rand.nextFloat()<=connectionPercent) {
-	    				Subscribers[i].subscribe("Topic\\"+(j+1));
+	    				Broker.Instance.RegisterSubscriber(Subscribers[i], topic);
 	    			}
 	    		}
 	    	}
 	    	
+	    	
 	    	System.out.println("Connected");
-	        
+	 
+	    	for(int i=0;i<noOfPub;i++) {
+	    		for(int j=0;j<noOfSub;j++) {
+	    			Broker.Instance.CheckForKeys(Subscribers[j],Publishers[i]);
+	    		}
+	    	}
+	    	
 	    	PublishingThread Pt[] = new PublishingThread[noOfPub];
 	        for(int i=0;i<noOfPub;i++) {
-	    		Pt[i] = new PublishingThread(Publishers[i],i+1);
-	    		
+	    		Pt[i] = new PublishingThread(Publishers[i]);
 	    	}
 	        
 	        //Waits for thread to finish
@@ -64,16 +69,9 @@ public class IotNetwork {
 			}
 	    	
 	    	for(int i=0;i<noOfPub;i++)	Publishers[i].disconnect();
-	    	for(int i=0;i<noOfSub;i++) Subscribers[i].disconnect();
+	    	for(int i=0;i<noOfSub;i++) 	Subscribers[i].disconnect();
 	    	
 	    	System.out.println("Disconnected");
-
-	    	System.out.println("Total Encryption Time:"+CipherManager.Instance.totalEncryptionTime);
-	    	System.out.println("Total Decryption Time:"+CipherManager.Instance.totalDecryptionTime);
-	    	
-	    	//Not giving required values
-	    	System.out.println("Total Encryption Memory:"+CipherManager.Instance.totalEncryptionMemory);
-	    	System.out.println("Total Decryption Memory:"+CipherManager.Instance.totalDecryptionMemory);
 	    	
 	    	System.exit(0);
 	        
@@ -87,20 +85,28 @@ public class IotNetwork {
 	    }
 	}
 
-	public static MqttClient CreateClient(ClientType ct, int id, String broker) throws MqttException {
-		MqttClient client;
+	
+	public static IotClient CreateClient(ClientType ct, int id) throws MqttException {
+		String broker = Broker.Instance.broker;
+		IotClient client;
 		MqttConnectOptions connOpts = new MqttConnectOptions();
-	    connOpts.setCleanSession(true);
+		connOpts.setCleanSession(true);
+		connOpts.setAutomaticReconnect(true);
+		connOpts.setKeepAliveInterval(1);
 		if(ct == ClientType.Publisher) {
-			client = new MqttClient(broker,"Pub"+id,new MemoryPersistence());
+			client = new IotClient(broker,"Pub"+id);
 		}else {
-			client = new MqttClient(broker,"Sub"+id,new MemoryPersistence());
-			client.setCallback(new SimpleMqttCallback(client.getClientId()));
+			client = new IotClient(broker,"Sub"+id);
 		}
+		client.callBack = new SimpleMqttCallback(client);
+		client.setCallback(client.callBack);
+		
 		client.connect(connOpts);
-	    return client;
+		client.subscribe("Channel\\Keys");
+		client.subscribe("Channel\\Message");
+		return client;
 	}
 
-
+	
 }
 
