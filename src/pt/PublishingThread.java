@@ -7,12 +7,11 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 public class PublishingThread extends Thread {
 	int duration = IotNetwork.SimulationDuration;
-	int qos = 2;
 	IotClient client ;
-	int id;
-	public PublishingThread(IotClient client,int id) {
+
+	public PublishingThread(IotClient client) {
 		this.client = client;
-		this.id = id;
+		//run();
 		start();
 	}
 	
@@ -20,21 +19,23 @@ public class PublishingThread extends Thread {
 	public void run() {
 		
 		try {
+			
 			for(int i=0;i<duration;i++) {
-				
 				String Topic = Broker.Instance.GetRandomTopic();
 				
 				ArrayList<ClientInfo> subscribers = Broker.Instance.SubscribersByTopic(Topic);
 			
 				PersonalConnection pc;
 				for(ClientInfo cl : subscribers) {
+					System.out.println("Publisher is "+client.getClientId());
+					
 					pc = new PersonalConnection(client,cl.client);
+					Thread.sleep(100);
 				}
 				
-				
-				
 				Thread.sleep(1000);
-			}		
+			}	
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

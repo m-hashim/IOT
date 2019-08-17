@@ -6,10 +6,13 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 public class SimpleMqttCallback implements MqttCallback {
 
-	String id;
-	public SimpleMqttCallback(String id) {
-		this.id = id;
+	private String id;
+	private IotClient client;
+	public SimpleMqttCallback(IotClient client) {
+		id = client.getClientId();
+		this.client = client;
 	}
+	
 	
 	@Override
 	public void connectionLost(Throwable arg0) {
@@ -23,11 +26,10 @@ public class SimpleMqttCallback implements MqttCallback {
 
 	@Override
 	public void messageArrived(String arg0, MqttMessage arg1) throws Exception {
-		String msg = new String(arg1.getPayload());
-		System.out.println("Message received by "+id);
+		client.MessageArrived(new String(arg1.getPayload()));
 		
-		//Message Decryption
-		CipherManager.Instance.Decryption(msg);
 	}
+	
+	
 
 }

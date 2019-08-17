@@ -6,8 +6,9 @@ public class AffineCipher
     {
     	String CTxt = "";
     	try {
-	        int a = key1;
-	        int b = key2;
+	        int a = 7;
+	        int b = key1;
+	        
 	        for (int i = 0; i < Msg.length(); i++)
 	        {
 	        	CTxt = CTxt + (char) ((((a * Msg.charAt(i)) + b) % 96)+32);
@@ -15,6 +16,8 @@ public class AffineCipher
     	}catch(Exception e) {
 			System.out.println("Error in Encrytion");
 			e.printStackTrace();
+		}finally {
+			//System.out.println("Error in Encrytion a and b are "+key1+" "+key2);
 		}
         return CTxt;
     }
@@ -23,8 +26,8 @@ public class AffineCipher
     {
         String Msg = "";
         try {
-	        int a = key1;
-	        int b = key2;
+	        int a = 7;
+	        int b = key1;
 	        int a_inv = 0;
 	        int flag = 0;
 	        for (int i = 0; i < 96; i++)
@@ -37,11 +40,13 @@ public class AffineCipher
 	        }
 	        for (int i = 0; i < CTxt.length(); i++)
 	        {
-	            Msg = Msg + (char) (((a_inv * ((CTxt.charAt(i) - b))% 96 ))+32 );
+	            Msg = Msg + (char) ((a_inv * (CTxt.charAt(i) - b)% 96 )+32+32 );
 	        }
         }catch(Exception e) {
 			System.out.println("Error in Decryption");
 			e.printStackTrace();
+		}finally {
+			//System.out.println("Error in Encrytion a and b are "+key1+" "+key2);
 		}
         return Msg;
     }

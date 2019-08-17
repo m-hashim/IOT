@@ -6,23 +6,26 @@ public class CipherManager {
 	public CipherManager() {}
 	public CipherManager(CipherType ct) {
 		cipherType = ct;
-		
 	}
 	
 	public String Encryption(String text) {
 		String result = new String();
+		
 		switch (cipherType){
 			case Affine:
 			{
 				result = AffineCipher.encryptionMessage(text,key1,key2);
+				break;
 			}
 			case Caesar:
 			{
 				result = CaesarCipher.encrypt(text,key1);
+				break;
 			}
 			case RailFence:
 			{
 				result = RailFenceCipher.Encryption(text, key1);
+				break;
 			}
 			default:
 			{
@@ -38,14 +41,17 @@ public class CipherManager {
 			case Affine:
 			{
 				result = AffineCipher.decryptionMessage(text,key1,key2);
+				break;
 			}
 			case Caesar:
 			{
 				result = CaesarCipher.decrypt(text,key1);
+				break;
 			}
 			case RailFence:
 			{
 				result = RailFenceCipher.Decryption(text, key1);
+				break;
 			}
 			default:
 			{

@@ -8,20 +8,14 @@ import java.util.Random;
 
 public class IotNetwork {
 
-	public static int MessageLength = 10000;
-	public static int SimulationDuration = 30;
+	public static int MessageLength = 100;
+	public static int SimulationDuration = 1;
 	
 	public static void main(String[] args) 
 	{
 		
-		
-		
 		int noOfSub=1, noOfPub=10;
-	    float connectionPercent = 30f;
-		
-	    
-	    
-	    
+	    float connectionPercent = 100f;
 	
 	    connectionPercent/=100f;
 
@@ -46,7 +40,6 @@ public class IotNetwork {
 	    	
 	    		for(String topic : Broker.Instance.Topics) {
 	    			if(rand.nextFloat()<=connectionPercent) {
-	    				//Subscribers[i].subscribe(topic);
 	    				Broker.Instance.RegisterSubscriber(Subscribers[i], topic);
 	    			}
 	    		}
@@ -57,8 +50,7 @@ public class IotNetwork {
 	        
 	    	PublishingThread Pt[] = new PublishingThread[noOfPub];
 	        for(int i=0;i<noOfPub;i++) {
-	    		Pt[i] = new PublishingThread(Publishers[i],i+1);
-	    		
+	    		Pt[i] = new PublishingThread(Publishers[i]);
 	    	}
 	        
 	        //Waits for thread to finish
@@ -87,20 +79,23 @@ public class IotNetwork {
 	    }
 	}
 
+	
 	public static IotClient CreateClient(ClientType ct, int id) throws MqttException {
 		String broker = Broker.Instance.broker;
 		IotClient client;
 		MqttConnectOptions connOpts = new MqttConnectOptions();
-	    connOpts.setCleanSession(true);
+		connOpts.setCleanSession(true);
+		connOpts.setAutomaticReconnect(true);
+		connOpts.setKeepAliveInterval(1);
 		if(ct == ClientType.Publisher) {
-					
-			client = new IotClient(broker,"Pub"+id,ct);
-			//new MqttClient(broker,"Pub"+id,new MemoryPersistence());
+			client = new IotClient(broker,"Pub"+id);
 		}else {
-			client = new IotClient(broker,"Sub"+id,ct);
-			//new MqttClient(broker,"Sub"+id,new MemoryPersistence());
-			client.setCallback(new SimpleMqttCallback(client.getClientId()));
+			client = new IotClient(broker,"Sub"+id);
 		}
+		client.callBack = new SimpleMqttCallback(client);
+		client.setCallback(client.callBack);
+		
+		System.out.println("Connect :"+client.getClientId());
 		client.connect(connOpts);
 	    return client;
 	}
