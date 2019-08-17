@@ -13,6 +13,7 @@ class ClientInfo {
 		this.topic = topic;
 	}
 } 
+
 public class Broker {
 	public static Broker Instance;
 	public String[] Topics = {"Pressure", "Humidity", "Rain", "Radiation",
@@ -47,7 +48,6 @@ public class Broker {
 		
 	}
 	
-	//return ArrayList of Subscribers which subscribes to Topic "topic" 
 	public ArrayList<ClientInfo> SubscribersByTopic(String topic){
 		ArrayList<ClientInfo> result = new ArrayList<ClientInfo>();
 		
@@ -59,13 +59,42 @@ public class Broker {
 		return result;
 	}
 	
-	
 	public String GetRandomTopic() {
 		try {
 			return Topics[new Random().nextInt(Topics.length)];
 		}catch(Exception e) {
 			e.printStackTrace();
 			return Topics[0];
+		}
+	}
+	
+	public void CheckForKeys(IotClient sender, IotClient receiver) {
+		if(!(sender.HasKeyFor(receiver.getClientId())&&receiver.HasKeyFor(sender.getClientId()))) {
+			//First key is cipher-technique
+			CreateNewKey(sender,receiver);
+					
+			//Second key is cipher-key
+			CreateNewKey(sender,receiver);
+		
+			//third key is another cipher-key
+			CreateNewKey(sender,receiver);
+			
+		}
+	}
+	
+	public void CreateNewKey(IotClient sender, IotClient receiver) {
+		try {
+			sender.GeneratePrivateKey();
+			receiver.GeneratePrivateKey();
+
+			receiver.TransferOwnGeneratedKey(sender.getClientId());
+			sender.TransferOwnGeneratedKey(receiver.getClientId());	
+	
+			Thread.currentThread().sleep(10);
+		}catch (InterruptedException e) {
+			e.printStackTrace();
+		}catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }

@@ -17,22 +17,16 @@ public class PublishingThread extends Thread {
 	
 	@Override
 	public void run() {
-		
-		try {
+		try {		
 			
 			for(int i=0;i<duration;i++) {
 				String Topic = Broker.Instance.GetRandomTopic();
 				
 				ArrayList<ClientInfo> subscribers = Broker.Instance.SubscribersByTopic(Topic);
 			
-				PersonalConnection pc;
 				for(ClientInfo cl : subscribers) {
-					System.out.println("Publisher is "+client.getClientId());
-					
-					pc = new PersonalConnection(client,cl.client);
-					Thread.sleep(100);
+					client.SendMessage(cl.client.getClientId());
 				}
-				
 				Thread.sleep(1000);
 			}	
 			

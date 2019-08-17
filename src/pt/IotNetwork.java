@@ -9,12 +9,12 @@ import java.util.Random;
 public class IotNetwork {
 
 	public static int MessageLength = 100;
-	public static int SimulationDuration = 1;
+	public static int SimulationDuration = 10;
 	
 	public static void main(String[] args) 
 	{
 		
-		int noOfSub=1, noOfPub=10;
+		int noOfSub=4, noOfPub=4;
 	    float connectionPercent = 100f;
 	
 	    connectionPercent/=100f;
@@ -47,7 +47,13 @@ public class IotNetwork {
 	    	
 	    	
 	    	System.out.println("Connected");
-	        
+	 
+	    	for(int i=0;i<noOfPub;i++) {
+	    		for(int j=0;j<noOfSub;j++) {
+	    			Broker.Instance.CheckForKeys(Subscribers[j],Publishers[i]);
+	    		}
+	    	}
+	    	
 	    	PublishingThread Pt[] = new PublishingThread[noOfPub];
 	        for(int i=0;i<noOfPub;i++) {
 	    		Pt[i] = new PublishingThread(Publishers[i]);
@@ -95,11 +101,12 @@ public class IotNetwork {
 		client.callBack = new SimpleMqttCallback(client);
 		client.setCallback(client.callBack);
 		
-		System.out.println("Connect :"+client.getClientId());
 		client.connect(connOpts);
-	    return client;
+		client.subscribe("Channel\\Keys");
+		client.subscribe("Channel\\Message");
+		return client;
 	}
 
-
+	
 }
 
