@@ -20,10 +20,10 @@ public class PublishingThread extends Thread {
 		try {		
 			
 			for(int i=0;i<duration;i++) {
-				String Topic = Broker.Instance.GetRandomTopic();
+				String Topic = Broker.Instance.Topics[client.Id]; 
 				
 				ArrayList<ClientInfo> subscribers = Broker.Instance.SubscribersByTopic(Topic);
-			
+				client.SendTo(subscribers.size());
 				for(ClientInfo cl : subscribers) {
 					client.SendMessage(cl.client.getClientId());
 				}

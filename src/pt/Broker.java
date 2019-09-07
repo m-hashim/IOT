@@ -16,8 +16,16 @@ class ClientInfo {
 
 public class Broker {
 	public static Broker Instance;
-	public String[] Topics = {"Pressure", "Humidity", "Rain", "Radiation",
-			"Temperature","UVIndex", "WindDirection", "WindSpeed"};
+	public String[] Topics = {"TEMPERATURE",
+			"RELATIVE_HUMIDITY",
+			"SEA_LVL_PRESSURE",
+			"TOTAL_PRECIPITATION",
+			"TOTAL_CLOUD_COVER",
+			"SUNSHINE_DURATION",
+			"SHORTWAVE_RADIATION",
+			"WIND_SPEED",
+			"WIND_DIRECTION",
+			"WIND_GUST"};
 	
 	ArrayList<ClientInfo> Subscribers;
 	
@@ -59,6 +67,7 @@ public class Broker {
 		return result;
 	}
 	
+	/*
 	public String GetRandomTopic() {
 		try {
 			return Topics[new Random().nextInt(Topics.length)];
@@ -67,6 +76,8 @@ public class Broker {
 			return Topics[0];
 		}
 	}
+	*/
+	
 	
 	public void CheckForKeys(IotClient sender, IotClient receiver) {
 		if(!(sender.HasKeyFor(receiver.getClientId())&&receiver.HasKeyFor(sender.getClientId()))) {

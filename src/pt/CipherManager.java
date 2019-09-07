@@ -6,6 +6,8 @@ public class CipherManager {
 	public CipherManager() {}
 	public CipherManager(CipherType ct) {
 		cipherType = ct;
+		//for testing purpose
+		cipherType = CipherType.Caesar;
 	}
 	
 	public String Encryption(String text) {

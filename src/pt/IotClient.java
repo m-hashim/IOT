@@ -5,27 +5,71 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.math.*;
 import java.util.*;
 import org.json.simple.*;  
 
 public class IotClient extends MqttClient {
+	public static ArrayList<String[]> WeatherMessage ;
+	public int Id;
+	public int AccessCount=0;
 	
 	public SimpleMqttCallback callBack;
 	public KeyInventory keyInventory;
+	
 	public IotClient(String serverURI, String clientId) throws MqttException {
 		super(serverURI, clientId, new MemoryPersistence());	
 		keyInventory = new KeyInventory(this);
+		
 	}
 	
 	public boolean HasKeyFor(String clientId) {
 		return keyInventory.HasKeysFor(clientId);
 	}
+
+	// Message Generation	
+	public static void CreateMessage() {
+		String row;
+		String PathToCsv="E:\\Projects\\Eclipse\\IOT\\bin\\WeatherData.csv";
+		WeatherMessage = new ArrayList<String[]>();
+		BufferedReader csvReader;
+		try {
+			csvReader = new BufferedReader(new FileReader(PathToCsv));
+			
+			while ((row = csvReader.readLine()) != null) {
+				//System.out.println(row);
+				String[] data = row.split(";");
+				//System.out.println(data[0]);
+				if(data!=null) WeatherMessage.add(data);
+				// do something with the data
+				//	
+			}
+			csvReader.close();
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	
+	// Message Accessing
+	int subscribersCount;
+	String Message;
+	public void SendTo(int subscribersCount) {
+		this.subscribersCount = subscribersCount;
+		Message= WeatherMessage.get(AccessCount)[Id+5];
+		AccessCount++;
+		//System.out.println(Message);
+	}
 	
 	public void SendMessage(String clientId) {
 		try {
 			CipherManager cm = GetCipherManager(clientId);
-        	String encryptedMessage = cm.Encryption(CreateContent());
+			String encryptedMessage = cm.Encryption(Message);
         	
         	JSONObject jobj = new JSONObject();
         	jobj.put("SenderId", getClientId());
@@ -55,7 +99,8 @@ public class IotClient extends MqttClient {
 			CipherManager  cm = GetCipherManager((String)jobj.get("SenderId"));
 			//Message Decryption		
 			System.out.println("Message received by "+getClientId() + " from " + jobj.get("SenderId"));
-			cm.Decryption((String)jobj.get("Message"));
+			cm.Decryption((String)jobj.get("Message"))
+			//System.out.println(cm.Decryption((String)jobj.get("Message")));
 		}
 	}
 	
@@ -111,8 +156,7 @@ public class IotClient extends MqttClient {
 	}
 	
 	public void ReceiveKey(String clientId, int key) {
-		otherPersonGeneratedKey = key;
-		keyInventory.AddKey(clientId, MyModPow(otherPersonGeneratedKey,privateKey,g));
+		keyInventory.AddKey(clientId, MyModPow(key,privateKey,g));
 	
 	}
 	
@@ -127,20 +171,6 @@ public class IotClient extends MqttClient {
 			e.printStackTrace();
 			return 1;
 		}
-	}
-	
-	// Message Generation	
-	String sample = "The quick brown fox jumps over the lazy dog The quick brown fox jumps over the lazy dog The quick brown fox jumps over the lazy dog The quick brown fox jumps over the lazy dog The quick brown fox jumps over the lazy dog";
-
-	public String CreateContent() {
-		
-		String result = new String();
-		StringBuffer sb = new StringBuffer();
-		for(int i=0;i<=IotNetwork.MessageLength/sample.length();i++) {
-			sb.append(sample);
-		}
-		result =sb.toString();
-		return result;
 	}
 	
 }

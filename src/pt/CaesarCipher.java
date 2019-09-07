@@ -15,7 +15,7 @@ public class CaesarCipher {
 	            encrypted += (char) c;
 	        }
         }catch(Exception e) {
-			System.out.println("Error in Encrytion");
+			System.out.println("Error in Encryption");
 			e.printStackTrace();
 		}
         return encrypted;

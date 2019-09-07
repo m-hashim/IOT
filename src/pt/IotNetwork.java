@@ -8,23 +8,22 @@ import java.util.Random;
 
 public class IotNetwork {
 
-	public static int MessageLength = 100;
-	public static int SimulationDuration = 10;
+	public static int SimulationDuration = 360;
 	
 	public static void main(String[] args) 
 	{
 		
-		int noOfSub=4, noOfPub=4;
-	    float connectionPercent = 100f;
+		int noOfSub=4, noOfPub=10;
+	    float connectionPercent = 70f;
 	
 	    connectionPercent/=100f;
 
 	    Broker.Instance = new Broker();
+	    IotClient.CreateMessage();
 	    
 	    
 	    IotClient[] Subscribers = new IotClient[noOfSub];
 	    IotClient[] Publishers = new IotClient[noOfPub];
-	    
 	    
 	    try {
 	        System.out.println("Connecting to broker");
@@ -38,7 +37,7 @@ public class IotNetwork {
 	    	for(int i=0;i<noOfSub;i++) {
 	    		Subscribers[i]= CreateClient(ClientType.Subscriber,i+1);
 	    	
-	    		for(String topic : Broker.Instance.Topics) {
+	    		for(String topic: Broker.Instance.Topics) {
 	    			if(rand.nextFloat()<=connectionPercent) {
 	    				Broker.Instance.RegisterSubscriber(Subscribers[i], topic);
 	    			}
@@ -95,6 +94,7 @@ public class IotNetwork {
 		connOpts.setKeepAliveInterval(1);
 		if(ct == ClientType.Publisher) {
 			client = new IotClient(broker,"Pub"+id);
+			client.Id = id-1;
 		}else {
 			client = new IotClient(broker,"Sub"+id);
 		}
