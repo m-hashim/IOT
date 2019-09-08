@@ -6,7 +6,7 @@ class RailFenceCipher{
 		String cipherText="";
 		try {
 			int r=depth,len=plainText.length();
-			int c=len/depth;
+			int c=(int)Math.ceil((float)len/depth);
 			char mat[][]=new char[r][c];
 			int k=0;
 			for(int i=0;i< c;i++)
@@ -16,7 +16,7 @@ class RailFenceCipher{
 				    if(k!=len)
 				    	mat[j][i]=plainText.charAt(k++);
 				    else
-				    	mat[j][i]='X';
+				    	mat[j][i]=':';
 				    }
 			    }
 			  	for(int i=0;i< r;i++)
@@ -40,7 +40,7 @@ class RailFenceCipher{
 		String plainText="";
 		try {
 			int r=depth,len=cipherText.length();
-			int c=len/depth;
+			int c=(int)Math.ceil((float)len/depth);
 			char mat[][]=new char[r][c];
 			int k=0;
 		   
@@ -57,6 +57,7 @@ class RailFenceCipher{
 				{
 				for(int j=0;j< r;j++)
 					{
+					if(mat[j][i]!=':')
 					plainText+=mat[j][i];
 					}
 				}
@@ -65,6 +66,12 @@ class RailFenceCipher{
 			e.printStackTrace();
 		}
 		return plainText;
+	}
+	
+	public static void main(String[] args) {
+		String encrypted =RailFenceCipher.Encryption("Hello", 7);
+		System.out.println(encrypted);
+		System.out.println(RailFenceCipher.Decryption(encrypted, 7));
 	}
 }
  

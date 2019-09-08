@@ -99,8 +99,8 @@ public class IotClient extends MqttClient {
 			CipherManager  cm = GetCipherManager((String)jobj.get("SenderId"));
 			//Message Decryption		
 			System.out.println("Message received by "+getClientId() + " from " + jobj.get("SenderId"));
-			cm.Decryption((String)jobj.get("Message"))
-			//System.out.println(cm.Decryption((String)jobj.get("Message")));
+			cm.Decryption((String)jobj.get("Message"));
+			System.out.println(cm.Decryption((String)jobj.get("Message")));
 		}
 	}
 	

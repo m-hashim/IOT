@@ -2,12 +2,12 @@ package pt;
 
 public class CipherManager {
 	private CipherType cipherType ;
-	private int key1 = 5 , key2 = 7;
+	private int key1 = 7 , key2 = 7;
 	public CipherManager() {}
 	public CipherManager(CipherType ct) {
 		cipherType = ct;
 		//for testing purpose
-		cipherType = CipherType.Caesar;
+		cipherType = CipherType.RailFence;
 	}
 	
 	public String Encryption(String text) {
