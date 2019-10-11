@@ -86,9 +86,6 @@ public class Broker {
 					
 			//Second key is cipher-key
 			CreateNewKey(sender,receiver);
-		
-			//third key is another cipher-key
-			CreateNewKey(sender,receiver);
 			
 		}
 	}

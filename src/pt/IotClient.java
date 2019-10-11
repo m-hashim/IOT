@@ -98,7 +98,7 @@ public class IotClient extends MqttClient {
 		else {
 			CipherManager  cm = GetCipherManager((String)jobj.get("SenderId"));
 			//Message Decryption		
-			System.out.println("Message received by "+getClientId() + " from " + jobj.get("SenderId"));
+			//System.out.println("Message received by "+getClientId() + " from " + jobj.get("SenderId"));
 			cm.Decryption((String)jobj.get("Message"));
 			System.out.println(cm.Decryption((String)jobj.get("Message")));
 		}
@@ -106,16 +106,14 @@ public class IotClient extends MqttClient {
 	
 	public CipherManager GetCipherManager(String clientId) {
 		try {
-		ArrayList<Integer> keys = keyInventory.GetKeysFor(clientId);
-		CipherManager cm = new CipherManager(CipherType.fromInteger(keys.get(0)%3));
-		cm.SetKey1(keys.get(1));
-		cm.SetKey2(keys.get(2));
-		return cm;
+			ArrayList<Integer> keys = keyInventory.GetKeysFor(clientId);
+			CipherManager cm = new CipherManager(CipherType.fromInteger(keys.get(0)%CipherType.NoOfCipherTechniques));
+			cm.SetKey1(keys.get(1));
+			return cm;
 		}catch(Exception e) {
 			e.printStackTrace();
-			CipherManager cm = new CipherManager(CipherType.Affine);
+			CipherManager cm = new CipherManager(CipherType.Caesar);
 			cm.SetKey1(5);
-			cm.SetKey2(5);
 			return cm;
 		}
 	}
@@ -127,11 +125,30 @@ public class IotClient extends MqttClient {
 	//randomly generate private key
 	//and generate my key
 	public void GeneratePrivateKey() {
-		Random rand = new Random();
-		privateKey = rand.nextInt(1000);
+		
+		privateKey = GetPrimeNumber();
 		myGeneratedKey = MyModPow(p,privateKey,g);
 	}
-	
+	public int GetPrimeNumber() {
+		Random rand = new Random();
+		int num;
+		do {
+		 num = rand.nextInt(Integer.MAX_VALUE);
+		}while(!IsPrime(num));
+		return num;
+	}
+	public boolean IsPrime(int n) {
+	    if (n <= 1)  return false; 
+	    if (n <= 3)  return true; 
+	  
+	    if (n%2 == 0 || n%3 == 0) return false; 
+	  
+	    for (int i=5; i*i<=n; i=i+6) 
+	        if (n%i == 0 || n%(i+2) == 0) 
+	           return false; 
+	  
+	    return true; 
+	}
 	
 	public void TransferOwnGeneratedKey(String clientId) {
 		try {

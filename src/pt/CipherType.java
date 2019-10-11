@@ -10,12 +10,13 @@ public enum CipherType {
 		case 0: 
 			return CipherType.Caesar;
 		case 1: 
-			return CipherType.Affine;
-		case 2: 
 			return CipherType.RailFence;
+		case 2: 
+			return CipherType.Affine;
 		default:
 			return null;
 		}
 	}
+	public static int NoOfCipherTechniques= 2;
 	
 }

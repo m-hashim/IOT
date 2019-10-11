@@ -6,12 +6,22 @@ public class AffineCipher
     {
     	String CTxt = "";
     	try {
-	        int a = 7;
-	        int b = key1;
+	        int a = key1;
+	        int b = key2;
 	        
 	        for (int i = 0; i < Msg.length(); i++)
 	        {
-	        	CTxt = CTxt + (char) ((((a * Msg.charAt(i)) + b) % 96)+32);
+	        	CTxt = CTxt + (char)((a*((int)Msg.charAt(i)-32)+b)%96+32) ;
+	        /*
+	        	System.out.print((int)Msg.charAt(i)+"\t");
+	        	System.out.print((int)Msg.charAt(i)-32+"\t");
+	        	System.out.print(a*((int)Msg.charAt(i)-32)+"\t");
+	        	System.out.print(a*((int)Msg.charAt(i)-32)+b+"\t");
+	        	System.out.print((a*((int)Msg.charAt(i)-32)+b)%96+"\t");
+
+	        	System.out.print((a*((int)Msg.charAt(i)-32)+b)%96+32+"\t");
+	        	System.out.println();
+	        */
 	        }
     	}catch(Exception e) {
 			System.out.println("Error in Encrytion");
@@ -26,8 +36,8 @@ public class AffineCipher
     {
         String Msg = "";
         try {
-	        int a = 7;
-	        int b = key1;
+	        int a = key1;
+	        int b = key2;
 	        int a_inv = 0;
 	        int flag = 0;
 	        for (int i = 0; i < 96; i++)
@@ -36,11 +46,26 @@ public class AffineCipher
 	            if (flag == 1)
 	            {
 	                a_inv = i;
+	            
 	            }
 	        }
 	        for (int i = 0; i < CTxt.length(); i++)
 	        {
-	            Msg = Msg + (char) ((a_inv * (CTxt.charAt(i) - b)% 96 )+32+32 );
+	        	int val = ((a_inv *((int)CTxt.charAt(i) - b) % 96)-32 )%96 ;
+	            val = val<96?val+32:val;
+	            val = val<32?val+96:val;
+	        	Msg = Msg + (char) (val);
+	            /*
+	            System.out.println("A inverse " + a_inv);
+	            System.out.print((int)CTxt.charAt(i)+"\t");
+	            System.out.print((int)CTxt.charAt(i)+32 +"\t");
+	            System.out.print((int)CTxt.charAt(i)+32- b+"\t");
+	            System.out.print(a_inv *((int)CTxt.charAt(i)+32 - b) +"\t");
+	            System.out.print((a_inv *((int)CTxt.charAt(i) - b) % 96) +"\t");
+	            System.out.print((((a_inv *((int)CTxt.charAt(i) - b) % 96)-32 )%96 )+"\t");
+	            
+	            System.out.println();
+	            */
 	        }
         }catch(Exception e) {
 			System.out.println("Error in Decryption");
@@ -50,4 +75,8 @@ public class AffineCipher
 		}
         return Msg;
     }
+    public static void main(String[] args) {
+    	System.out.println(AffineCipher.decryptionMessage(AffineCipher.encryptionMessage("00.00", 13, 11),13,11));
+    }
+    
 }

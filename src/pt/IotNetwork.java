@@ -13,7 +13,7 @@ public class IotNetwork {
 	public static void main(String[] args) 
 	{
 		
-		int noOfSub=4, noOfPub=10;
+		int noOfSub=10, noOfPub=2;
 	    float connectionPercent = 70f;
 	
 	    connectionPercent/=100f;
@@ -90,8 +90,8 @@ public class IotNetwork {
 		IotClient client;
 		MqttConnectOptions connOpts = new MqttConnectOptions();
 		connOpts.setCleanSession(true);
-		connOpts.setAutomaticReconnect(true);
-		connOpts.setKeepAliveInterval(1);
+		//connOpts.setAutomaticReconnect(true);
+		//connOpts.setKeepAliveInterval(1);
 		if(ct == ClientType.Publisher) {
 			client = new IotClient(broker,"Pub"+id);
 			client.Id = id-1;

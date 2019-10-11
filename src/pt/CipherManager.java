@@ -2,12 +2,12 @@ package pt;
 
 public class CipherManager {
 	private CipherType cipherType ;
-	private int key1 = 7 , key2 = 7;
+	private int key1 = 7 ;
 	public CipherManager() {}
 	public CipherManager(CipherType ct) {
 		cipherType = ct;
 		//for testing purpose
-		cipherType = CipherType.RailFence;
+		//cipherType = CipherType.RailFence;
 	}
 	
 	public String Encryption(String text) {
@@ -16,7 +16,7 @@ public class CipherManager {
 		switch (cipherType){
 			case Affine:
 			{
-				result = AffineCipher.encryptionMessage(text,key1,key2);
+				result = AffineCipher.encryptionMessage(text,key1,5);
 				break;
 			}
 			case Caesar:
@@ -42,7 +42,7 @@ public class CipherManager {
 		switch (cipherType){
 			case Affine:
 			{
-				result = AffineCipher.decryptionMessage(text,key1,key2);
+				result = AffineCipher.decryptionMessage(text,key1,5);
 				break;
 			}
 			case Caesar:
@@ -67,7 +67,5 @@ public class CipherManager {
 		key1 = key;
 	}
 	
-	public void SetKey2(int key) {
-		key2 = key;
-	}
+
 }
