@@ -7,7 +7,7 @@ public class CipherManager {
 	public CipherManager(CipherType ct) {
 		cipherType = ct;
 		//for testing purpose
-		//cipherType = CipherType.RailFence;
+		cipherType = CipherType.RailFence;
 	}
 	
 	public String Encryption(String text) {

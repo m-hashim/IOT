@@ -8,7 +8,7 @@ import java.util.Random;
 
 public class IotNetwork {
 
-	public static int SimulationDuration = 360;
+	public static int SimulationDuration = 10;//360;
 	
 	public static void main(String[] args) 
 	{
@@ -27,17 +27,22 @@ public class IotNetwork {
 	    
 	    try {
 	        System.out.println("Connecting to broker");
-	        
+	        Random rand = new Random();       
 	    	for(int i=0;i<noOfPub;i++) {
+	    		
 	    		Publishers[i]= CreateClient(ClientType.Publisher,i+1);
+	    		Broker.Instance.Publishers.add(Publishers[i]);
+	    		for(String topic: Broker.Instance.topicName) {
+	    			if(rand.nextFloat()<=connectionPercent) {
+	    				Broker.Instance.RegisterPublisher(Publishers[i], topic);
+	    			}
+	    		}
 	    	}
 	        
-	    	Random rand = new Random();        
-	    	
 	    	for(int i=0;i<noOfSub;i++) {
 	    		Subscribers[i]= CreateClient(ClientType.Subscriber,i+1);
 	    	
-	    		for(String topic: Broker.Instance.Topics) {
+	    		for(String topic: Broker.Instance.topicName) {
 	    			if(rand.nextFloat()<=connectionPercent) {
 	    				Broker.Instance.RegisterSubscriber(Subscribers[i], topic);
 	    			}
@@ -70,7 +75,10 @@ public class IotNetwork {
 	    	for(int i=0;i<noOfPub;i++)	Publishers[i].disconnect();
 	    	for(int i=0;i<noOfSub;i++) 	Subscribers[i].disconnect();
 	    	
+	    	
+	    	
 	    	System.out.println("Disconnected");
+	    	Broker.Instance.PaymentSummary();
 	    	
 	    	System.exit(0);
 	        

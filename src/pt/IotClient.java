@@ -16,15 +16,15 @@ import org.json.simple.*;
 public class IotClient extends MqttClient {
 	public static ArrayList<String[]> WeatherMessage ;
 	public int Id;
-	public int AccessCount=0;
 	
 	public SimpleMqttCallback callBack;
 	public KeyInventory keyInventory;
 	
+	public ArrayList<String> topics;
 	public IotClient(String serverURI, String clientId) throws MqttException {
 		super(serverURI, clientId, new MemoryPersistence());	
 		keyInventory = new KeyInventory(this);
-		
+		topics = new ArrayList<String>();
 	}
 	
 	public boolean HasKeyFor(String clientId) {
@@ -57,12 +57,9 @@ public class IotClient extends MqttClient {
 
 	
 	// Message Accessing
-	int subscribersCount;
 	String Message;
-	public void SendTo(int subscribersCount) {
-		this.subscribersCount = subscribersCount;
-		Message= WeatherMessage.get(AccessCount)[Id+5];
-		AccessCount++;
+	public void SetMessage(int topicId, int accessCount) {
+		Message= WeatherMessage.get(accessCount)[topicId+5];
 		//System.out.println(Message);
 	}
 	
@@ -100,7 +97,7 @@ public class IotClient extends MqttClient {
 			//Message Decryption		
 			//System.out.println("Message received by "+getClientId() + " from " + jobj.get("SenderId"));
 			cm.Decryption((String)jobj.get("Message"));
-			System.out.println(cm.Decryption((String)jobj.get("Message")));
+			//System.out.println(cm.Decryption((String)jobj.get("Message")));
 		}
 	}
 	
